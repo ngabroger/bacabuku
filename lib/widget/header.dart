@@ -2,6 +2,7 @@ import 'package:bacabuku/databuku.dart';
 import 'package:bacabuku/detailbuku.dart';
 import 'package:flutter/material.dart';
 import 'package:avatar_brick/avatar_brick.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class headerBar extends StatelessWidget {
   @override
@@ -13,12 +14,15 @@ class headerBar extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Center(
-                child: Image.asset(
-              'images/logobacabuku.png',
-              width: 50,
-              height: 50,
-            )),
+            Animate(
+              effects: [FadeEffect(), ScaleEffect()],
+              child: Center(
+                  child: Image.asset(
+                'images/logobacabuku.png',
+                width: 50,
+                height: 50,
+              )),
+            ),
             Row(
               children: [
                 IconButton(

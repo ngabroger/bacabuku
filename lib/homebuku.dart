@@ -1,11 +1,12 @@
 import 'package:avatar_brick/avatar_brick.dart';
 import 'package:bacabuku/databuku.dart';
 import 'package:bacabuku/detailbuku.dart';
+import 'package:bacabuku/semuabuku.dart';
 import 'package:bacabuku/widget/header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'widget/header.dart';
-import 'package:animation_search_bar/animation_search_bar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,11 +16,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  bool showCard = false;
   Color backgroundColor = Colors.green;
   String selectedCategory = '';
   late TextEditingController controller;
   late List<String> bookSearch;
-  List<String> displayedBooks = [];
+
   List<String> allCategories = [];
   List<BookList> selectedCategoryBooks = [];
 
@@ -35,13 +37,14 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    displayedBooks = bookCatalog.map((book) => book.nameBook).toList();
-    controller = TextEditingController();
 
     for (var book in bookCatalog) {
       allCategories.addAll(book.category);
     }
     allCategories = allCategories.toSet().toList();
+
+    selectedCategoryBooks =
+        bookCatalog.where((book) => book.own == false).toList();
   }
 
   @override
@@ -65,7 +68,7 @@ class _HomePageState extends State<HomePage> {
                     headerBar(),
                     Container(
                       margin: const EdgeInsets.only(left: 15, top: 5),
-                      child: const Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
@@ -76,26 +79,6 @@ class _HomePageState extends State<HomePage> {
                                 fontFamily: 'amiri',
                                 fontWeight: FontWeight.bold),
                           ),
-                          Padding(
-                              padding: EdgeInsets.only(right: 21.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'View All',
-                                    style: TextStyle(
-                                        fontFamily: 'amiri',
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black54),
-                                  ),
-                                  Icon(
-                                    Icons.arrow_forward_ios_rounded,
-                                    size: 15.0,
-                                    color: Colors.black54,
-                                  )
-                                ],
-                              ))
                         ],
                       ),
                     ),
@@ -182,7 +165,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     Container(
                       padding: const EdgeInsets.only(left: 15),
-                      child: const Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
@@ -195,22 +178,33 @@ class _HomePageState extends State<HomePage> {
                           ),
                           Padding(
                             padding: EdgeInsets.only(right: 15.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'See more',
-                                  style: TextStyle(
-                                    fontFamily: 'amiri',
-                                    color: Colors.black54,
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(context, MaterialPageRoute(
+                                  builder: (context) {
+                                    return allBook();
+                                  },
+                                ));
+                              },
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'See more',
+                                    style: TextStyle(
+                                      fontFamily: 'amiri',
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black54,
+                                    ),
                                   ),
-                                ),
-                                Icon(
-                                  Icons.arrow_forward_ios_rounded,
-                                  size: 15.0,
-                                  color: Colors.black54,
-                                )
-                              ],
+                                  Icon(
+                                    Icons.arrow_forward_ios_rounded,
+                                    size: 15.0,
+                                    color: Colors.black54,
+                                  )
+                                ],
+                              ),
                             ),
                           ),
                         ],
@@ -264,53 +258,57 @@ class _HomePageState extends State<HomePage> {
                             overscroll.disallowIndicator();
                             return false;
                           },
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemBuilder: (context, index) {
-                              final BookList? book =
-                                  selectedCategoryBooks[index];
-                              if (book != null) {
-                                if (book.own != null && book.own == false) {
-                                  return Container(
-                                      margin: const EdgeInsets.only(left: 10),
-                                      child: Card(
-                                        color: Colors.white,
-                                        shadowColor: Colors.white,
-                                        elevation: 0,
-                                        child: InkWell(
-                                          onTap: () {
-                                            Navigator.push(context,
-                                                MaterialPageRoute(
-                                                    builder: (context) {
-                                              return DetailPage(book: book);
-                                            }));
-                                          },
-                                          child: Hero(
-                                              tag: 'gambar ${book.imageasset}',
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    const BorderRadius.all(
-                                                  Radius.circular(10),
-                                                ),
-                                                child: Image.asset(
-                                                  book.imageasset,
-                                                  width: 130,
-                                                  height: 250,
-                                                ),
-                                              )),
-                                        ),
-                                      ));
+                          child: Animate(
+                            effects: [FadeEffect(duration: 300.ms)],
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (context, index) {
+                                final BookList? book =
+                                    selectedCategoryBooks[index];
+                                if (book != null) {
+                                  if (book.own != null && book.own == false) {
+                                    return Container(
+                                        margin: const EdgeInsets.only(left: 10),
+                                        child: Card(
+                                          color: Colors.white,
+                                          shadowColor: Colors.white,
+                                          elevation: 0,
+                                          child: InkWell(
+                                            onTap: () {
+                                              Navigator.push(context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) {
+                                                return DetailPage(book: book);
+                                              }));
+                                            },
+                                            child: Hero(
+                                                tag:
+                                                    'gambar ${book.imageasset}',
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      const BorderRadius.all(
+                                                    Radius.circular(10),
+                                                  ),
+                                                  child: Image.asset(
+                                                    book.imageasset,
+                                                    width: 130,
+                                                    height: 250,
+                                                  ),
+                                                )),
+                                          ),
+                                        ));
+                                  } else {
+                                    return const SizedBox();
+                                  }
                                 } else {
                                   return const SizedBox();
                                 }
-                              } else {
-                                return const SizedBox();
-                              }
-                            },
-                            itemCount: selectedCategoryBooks.length,
+                              },
+                              itemCount: selectedCategoryBooks.length,
+                            ),
                           ),
                         )),
-                  ],
+                  ].animate(interval: 400.ms).fade(duration: 300.ms),
                 ),
               ),
             ],
