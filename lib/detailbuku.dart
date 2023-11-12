@@ -1,10 +1,16 @@
 import 'package:bacabuku/databuku.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
-class DetailPage extends StatelessWidget {
+class DetailPage extends StatefulWidget {
   final BookList book;
   const DetailPage({Key? key, required this.book}) : super(key: key);
 
+  @override
+  State<DetailPage> createState() => _DetailPageState();
+}
+
+class _DetailPageState extends State<DetailPage> {
   @override
   Widget build(BuildContext context) {
     Color grey = Color(0xFFFFF4E4);
@@ -43,8 +49,17 @@ class DetailPage extends StatelessWidget {
                                         icon: Icon(Icons.arrow_back_ios_new)),
                                     Row(
                                       children: [
-                                        Icon(Icons.favorite_border_outlined),
-                                        Icon(Icons.more_vert),
+                                        FavoriteButton(),
+                                        PopupMenuButton(
+                                          itemBuilder: (context) => [
+                                            PopupMenuItem(
+                                              child: Text('Dummy 1'),
+                                            ),
+                                            PopupMenuItem(
+                                              child: Text('Dummy 2'),
+                                            ),
+                                          ],
+                                        )
                                       ],
                                     ),
                                   ],
@@ -56,12 +71,13 @@ class DetailPage extends StatelessWidget {
                                   child: Column(
                                     children: [
                                       Hero(
-                                          tag: 'gambar ${book.imageasset}',
+                                          tag:
+                                              'gambar ${widget.book.imageasset}',
                                           child: ClipRRect(
                                             borderRadius: BorderRadius.all(
                                                 Radius.circular(15)),
                                             child: Image.asset(
-                                              book.imageasset,
+                                              widget.book.imageasset,
                                               height: 250,
                                             ),
                                           )),
@@ -70,7 +86,7 @@ class DetailPage extends StatelessWidget {
                                           child: Column(
                                             children: [
                                               Text(
-                                                book.nameBook,
+                                                widget.book.nameBook,
                                                 style: TextStyle(
                                                     fontSize: 30,
                                                     fontFamily: 'amiri',
@@ -78,7 +94,7 @@ class DetailPage extends StatelessWidget {
                                                         FontWeight.bold),
                                               ),
                                               Text(
-                                                'by ' + book.penulis,
+                                                'by ' + widget.book.penulis,
                                                 style: TextStyle(
                                                     fontSize: 18,
                                                     color: Colors.black54,
@@ -127,7 +143,7 @@ class DetailPage extends StatelessWidget {
                                     fontWeight: FontWeight.bold),
                               ),
                               Text(
-                                book.price,
+                                widget.book.price,
                                 textAlign: TextAlign.left,
                                 style: TextStyle(
                                     fontFamily: 'amiri',
@@ -141,7 +157,7 @@ class DetailPage extends StatelessWidget {
                         Container(
                           width: 350,
                           child: Text(
-                            book.description,
+                            widget.book.description,
                             textAlign: TextAlign.left,
                             style: TextStyle(
                                 fontFamily: 'amiri',
@@ -166,7 +182,7 @@ class DetailPage extends StatelessWidget {
                     crossAxisAlignment: WrapCrossAlignment.start,
                     direction: Axis.horizontal,
                     alignment: WrapAlignment.start,
-                    children: book.category.map((category) {
+                    children: widget.book.category.map((category) {
                       Color backgroundColor = Colors.green;
                       if (category == 'Persahabatan') {
                         backgroundColor = Color(0xFFd5bfa5);
@@ -196,25 +212,117 @@ class DetailPage extends StatelessWidget {
                 ],
               ),
             ),
-            Container(
-              margin: EdgeInsets.only(top: 10),
-              child: Center(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.all(Radius.circular(50)),
-                  child: Container(
-                    color: book.own ? Colors.grey : Colors.black87,
-                    height: 50,
-                    width: 350,
-                    child: Center(
-                        child: Text(
-                      book.own ? 'You have It' : 'Buy this Book',
-                      style: TextStyle(
-                        fontFamily: 'amiri',
-                        fontSize: 20,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
+            SizedBox(
+              width: 350,
+              height: 50,
+              child: InkWell(
+                onTap: () {
+                  if (widget.book.own == true) {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          icon: Icon(Icons.check),
+                          iconColor: Colors.green,
+                          title: Center(
+                            child: Text(
+                              'Book Already Owned',
+                              style: TextStyle(
+                                fontFamily: 'amiri',
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          actions: <Widget>[
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text(
+                                  'Ok',
+                                  style: TextStyle(
+                                      fontFamily: 'amiri', color: Colors.black),
+                                ))
+                          ],
+                        );
+                      },
+                    );
+                  } else if (widget.book.own == false) {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          icon: Icon(Icons.question_mark),
+                          title: Center(
+                            child: Text(
+                              'Are you Sure?',
+                              style: TextStyle(
+                                fontFamily: 'amiri',
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          actions: <Widget>[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                TextButton(
+                                  onPressed: () {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Thank you for buying'),
+                                        duration: 2.ms,
+                                      ),
+                                    );
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text(
+                                    'Sure',
+                                    style: TextStyle(
+                                        fontFamily: 'amiri',
+                                        color: Colors.black),
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text(
+                                    'Cancel',
+                                    style: TextStyle(
+                                        fontFamily: 'amiri',
+                                        color: Colors.redAccent),
+                                  ),
+                                )
+                              ],
+                            )
+                          ],
+                        );
+                      },
+                    );
+                  }
+                },
+                child: Container(
+                  margin: EdgeInsets.only(top: 10),
+                  child: Center(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(50)),
+                      child: Container(
+                        color: widget.book.own ? Colors.grey : Colors.black87,
+                        height: 50,
+                        width: 350,
+                        child: Center(
+                            child: Text(
+                          widget.book.own ? 'You have It' : 'Buy this Book',
+                          style: TextStyle(
+                            fontFamily: 'amiri',
+                            fontSize: 20,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        )),
                       ),
-                    )),
+                    ),
                   ),
                 ),
               ),
@@ -223,5 +331,46 @@ class DetailPage extends StatelessWidget {
         )
       ],
     )));
+  }
+}
+
+class FavoriteButton extends StatefulWidget {
+  const FavoriteButton({super.key});
+
+  @override
+  _FavoriteButtonState createState() => _FavoriteButtonState();
+}
+
+class _FavoriteButtonState extends State<FavoriteButton> {
+  bool isFavorite = false;
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return IconButton(
+      onPressed: () {
+        if (isFavorite == false) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Adding To Favorite'),
+              duration: 2.5.ms,
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Deleting From Favorite'),
+              duration: 2.5.ms,
+            ),
+          );
+        }
+        setState(() {
+          isFavorite = !isFavorite;
+        });
+      },
+      icon: Icon(
+        isFavorite ? Icons.favorite : Icons.favorite_border,
+        color: Colors.grey,
+      ),
+    );
   }
 }

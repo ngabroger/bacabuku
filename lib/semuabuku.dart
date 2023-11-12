@@ -27,102 +27,108 @@ class _allBookState extends State<allBook> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size(double.infinity, 65),
-        child: SafeArea(
-          child: Container(
-            decoration: BoxDecoration(color: Colors.white, boxShadow: [
-              BoxShadow(
-                  color: Colors.black26,
-                  blurRadius: 5,
-                  spreadRadius: 0,
-                  offset: Offset(0, 5)),
-            ]),
-            alignment: Alignment.center,
-            child: AnimationSearchBar(
-                centerTitle: 'All Book',
-                onChanged: (text) {
-                  setState(() {
-                    searchResults = orignalBookCatalog
-                        .where((element) => element.nameBook
-                            .toLowerCase()
-                            .contains(text.toLowerCase()))
-                        .toList();
-                  });
-                },
-                searchTextEditingController: controller),
+        appBar: PreferredSize(
+          preferredSize: Size(double.infinity, 65),
+          child: SafeArea(
+            child: Container(
+              decoration: BoxDecoration(color: Colors.white, boxShadow: [
+                BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 5,
+                    spreadRadius: 0,
+                    offset: Offset(0, 5)),
+              ]),
+              alignment: Alignment.center,
+              child: AnimationSearchBar(
+                  centerTitle: 'All Book',
+                  onChanged: (text) {
+                    setState(() {
+                      searchResults = orignalBookCatalog
+                          .where((element) => element.nameBook
+                              .toLowerCase()
+                              .contains(text.toLowerCase()))
+                          .toList();
+                    });
+                  },
+                  searchTextEditingController: controller),
+            ),
           ),
         ),
-      ),
-      body: ListView.builder(
-          itemCount: searchResults.isNotEmpty
-              ? searchResults.length
-              : orignalBookCatalog.length,
-          itemBuilder: (context, index) => InkWell(
-                onTap: () => Navigator.push(context, MaterialPageRoute(
-                  builder: (context) {
-                    return DetailPage(
-                        book: searchResults.isNotEmpty
-                            ? searchResults[index]
-                            : orignalBookCatalog[index]);
-                  },
-                )),
-                child: Container(
-                  child: ClipRRect(
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(10),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
-                            child: Image.asset(
-                              searchResults.isNotEmpty
-                                  ? searchResults[index].imageasset
-                                  : orignalBookCatalog[index].imageasset,
-                              width: 100,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 15,
-                          width: 15,
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+        body: NotificationListener<OverscrollIndicatorNotification>(
+          onNotification: (overscroll) {
+            overscroll.disallowIndicator();
+            return false;
+          },
+          child: ListView.builder(
+              itemCount: searchResults.isNotEmpty
+                  ? searchResults.length
+                  : orignalBookCatalog.length,
+              itemBuilder: (context, index) => InkWell(
+                    onTap: () => Navigator.push(context, MaterialPageRoute(
+                      builder: (context) {
+                        return DetailPage(
+                            book: searchResults.isNotEmpty
+                                ? searchResults[index]
+                                : orignalBookCatalog[index]);
+                      },
+                    )),
+                    child: Container(
+                      child: ClipRRect(
+                        child: Row(
                           children: [
-                            Text(
-                              searchResults.isNotEmpty
-                                  ? searchResults[index].nameBook
-                                  : orignalBookCatalog[index].nameBook,
-                              style: TextStyle(
-                                  fontFamily: 'amiri',
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold),
-                              textAlign: TextAlign.left,
+                            Container(
+                              padding: EdgeInsets.all(10),
+                              child: ClipRRect(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(15)),
+                                child: Image.asset(
+                                  searchResults.isNotEmpty
+                                      ? searchResults[index].imageasset
+                                      : orignalBookCatalog[index].imageasset,
+                                  width: 100,
+                                ),
+                              ),
                             ),
                             SizedBox(
-                              height: 5,
+                              height: 15,
                               width: 15,
                             ),
-                            Text(
-                              searchResults.isNotEmpty
-                                  ? searchResults[index].price
-                                  : orignalBookCatalog[index].price,
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                  fontFamily: 'amiri',
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black45),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  searchResults.isNotEmpty
+                                      ? searchResults[index].nameBook
+                                      : orignalBookCatalog[index].nameBook,
+                                  style: TextStyle(
+                                      fontFamily: 'amiri',
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                  textAlign: TextAlign.left,
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                  width: 15,
+                                ),
+                                Text(
+                                  searchResults.isNotEmpty
+                                      ? searchResults[index].price
+                                      : orignalBookCatalog[index].price,
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      fontFamily: 'amiri',
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black45),
+                                )
+                              ],
                             )
                           ],
-                        )
-                      ],
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              )),
-    );
+                  )),
+        ));
   }
 }
