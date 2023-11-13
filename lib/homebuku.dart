@@ -49,7 +49,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    Color cream = Color(0xFFd5bfa5);
     return Scaffold(
         body: SafeArea(
       child: NotificationListener<OverscrollIndicatorNotification>(

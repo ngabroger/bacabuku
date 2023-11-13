@@ -1,7 +1,5 @@
-import 'package:bacabuku/databuku.dart';
-import 'package:bacabuku/detailbuku.dart';
 import 'package:bacabuku/homebuku.dart';
-import 'package:bacabuku/semuabuku.dart';
+
 import 'package:flutter/material.dart';
 
 void main() {
